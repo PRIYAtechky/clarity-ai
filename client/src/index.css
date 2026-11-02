@@ -1,0 +1,116 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #FAF9F6;
+    color: #292B29;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Custom subtle scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #E9E8E2;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #D2D1C8;
+  }
+}
+
+/* Markdown prose enhancements */
+.markdown-body {
+  color: #292B29;
+  font-size: 0.96rem;
+  line-height: 1.68;
+}
+
+.markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4 {
+  color: #292B29;
+  font-weight: 600;
+  margin-top: 1.3em;
+  margin-bottom: 0.6em;
+  letter-spacing: -0.01em;
+}
+
+.markdown-body h1 { font-size: 1.45rem; border-bottom: 1px solid #E9E8E2; padding-bottom: 0.3em; }
+.markdown-body h2 { font-size: 1.25rem; border-bottom: 1px solid #E9E8E2; padding-bottom: 0.25em; }
+.markdown-body h3 { font-size: 1.1rem; }
+.markdown-body h4 { font-size: 1.0rem; }
+
+.markdown-body p {
+  margin-bottom: 1em;
+}
+
+.markdown-body ul, .markdown-body ol {
+  margin-top: 0.5em;
+  margin-bottom: 1em;
+  padding-left: 1.4em;
+}
+
+.markdown-body ul { list-style-type: disc; }
+.markdown-body ol { list-style-type: decimal; }
+
+.markdown-body li {
+  margin-bottom: 0.35em;
+}
+
+.markdown-body table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 1.2em 0;
+  border: 1px solid #E9E8E2;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #FFFFFF;
+}
+
+.markdown-body th {
+  background-color: #F0F3ED;
+  color: #292B29;
+  font-weight: 600;
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid #E9E8E2;
+  font-size: 0.88rem;
+}
+
+.markdown-body td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #E9E8E2;
+  font-size: 0.88rem;
+}
+
+.markdown-body tr:last-child td {
+  border-bottom: none;
+}
+
+.markdown-body blockquote {
+  border-left: 3px solid #879783;
+  padding-left: 1rem;
+  color: #777973;
+  margin: 1em 0;
+  font-style: italic;
+  background-color: #FAF9F6;
+  border-radius: 0 4px 4px 0;
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+}
+
+.markdown-body code:not(pre code) {
+  font-family: 'JetBrains Mono', monospace;
+  background-color: #F0F3ED;
+  color: #292B29;
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.85em;
+}
