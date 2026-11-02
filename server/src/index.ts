@@ -1,7 +1,9 @@
+
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
+
 import { config, maskApiKey } from './config.js';
 import { healthRouter } from './routes/health.router.js';
 import { conversationRouter } from './routes/conversation.router.js';
@@ -23,25 +25,29 @@ if (!fs.existsSync(config.uploadDir)) {
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, curl, postman)
+      // Allow requests with no origin (mobile apps, curl, Postman)
       if (!origin) return callback(null, true);
 
       // Check configured origins
-      if (config.clientOrigin.includes(origin)) return callback(null, true);
+      if (config.clientOrigin.includes(origin)) {
+        return callback(null, true);
+      }
 
-      // Allow any localhost / 127.0.0.1
+      // Allow localhost and 127.0.0.1
       if (/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
         return callback(null, true);
       }
 
       // In LAN mode, allow private network origins
       if (config.isLanMode) {
-        if (/^http:\/\/(192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2[0-9]|3[0-1])\.\d+\.\d+)(:\d+)?$/.test(origin)) {
+        if (
+          /^http:\/\/(192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2[0-9]|3[0-1])\.\d+\.\d+)(:\d+)?$/.test(origin)
+        ) {
           return callback(null, true);
         }
       }
 
-      return callback(null, true); // Permissive in dev to avoid blocking LAN clients
+      return callback(null, true);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -52,7 +58,7 @@ app.use(
 app.use(express.json({ limit: '15mb' }));
 app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 
-// Apply rate limiting to all /api routes
+// Apply rate limiting to all API routes
 app.use('/api', rateLimiter(120, 60 * 1000));
 
 // API Routes
@@ -62,10 +68,26 @@ app.use('/api/documents', documentRouter);
 app.use('/api/chat', chatRouter);
 app.use('/api/lan', lanRouter);
 
+// Serve React frontend in production
+if (process.env.NODE_ENV === 'production') {
+  const clientDistPath = path.resolve(process.cwd(), 'client', 'dist');
+
+  app.use(express.static(clientDistPath));
+
+  // React application fallback
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api/')) {
+      return next();
+    }
+
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+}
+
 // Central error handler
 app.use(errorHandler);
 
-// Start server if not imported as module in tests
+// Start server if not imported as a module in tests
 if (process.env.NODE_ENV !== 'test') {
   const host = config.host;
   const port = config.port;
@@ -73,19 +95,32 @@ if (process.env.NODE_ENV !== 'test') {
   const server = app.listen(port, host, () => {
     const addr = server.address();
     const primaryIp = LanService.getPrimaryLanIp(config.lanHostIp);
-    const boundStr = typeof addr === 'object' && addr ? `${addr.address}:${addr.port}` : `${host}:${port}`;
+
+    const boundStr =
+      typeof addr === 'object' && addr
+        ? `${addr.address}:${addr.port}`
+        : `${host}:${port}`;
+
     const divider = '─'.repeat(54);
 
     console.log(`\n┌${divider}┐`);
     console.log(`│               CLARITY AI BACKEND SERVER              │`);
     console.log(`├${divider}┤`);
     console.log(`│ Status:        Online & Bound Successfully           │`);
-    console.log(`│ Mode:          ${(config.isLanMode ? 'LAN Mode (Broadcasting)' : 'Localhost Mode').padEnd(38)}│`);
+    console.log(
+      `│ Mode:          ${(config.isLanMode ? 'LAN Mode (Broadcasting)' : 'Localhost Mode').padEnd(38)}│`
+    );
     console.log(`│ Bound Address: ${boundStr.padEnd(38)}│`);
-    console.log(`│ Health Check:  ${(`http://127.0.0.1:${port}/api/health`).padEnd(38)}│`);
+    console.log(
+      `│ Health Check:  ${(`http://127.0.0.1:${port}/api/health`).padEnd(38)}│`
+    );
+
     if (config.isLanMode || host === '0.0.0.0') {
-      console.log(`│ LAN Access:    ${(`http://${primaryIp}:${port}/api/health`).padEnd(38)}│`);
+      console.log(
+        `│ LAN Access:    ${(`http://${primaryIp}:${port}/api/health`).padEnd(38)}│`
+      );
     }
+
     console.log(`│ Gemini Model:  ${config.geminiModel.padEnd(38)}│`);
     console.log(`│ Gemini Key:    ${maskApiKey(config.geminiApiKey).padEnd(38)}│`);
     console.log(`└${divider}┘\n`);
