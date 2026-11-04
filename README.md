@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # 🌟 Clarity AI — Document Research Chatbot & Intelligence Engine
 
 > A full-stack, enterprise-grade AI research assistant powered by **Google Gemini** (via Google AI Studio) with **verifiable document citations**, **multi-document comparison**, **chunk-level indexing**, and native **LAN multi-device access**.
@@ -249,5 +248,3 @@ Executes a real workflow with live Google Gemini AI calls:
 
 *Engineered with precision for Google AI Studio & Gemini.*
 =======
-# clarity-ai
->>>>>>> 8ecaa6ce6ce74fbd6e3ab263060518d6ae5d0bec
